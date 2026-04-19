@@ -8,10 +8,7 @@ import com.movieflix.service.MovieService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.method.annotation.StreamingResponseBody;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
@@ -41,5 +38,12 @@ public class MovieController {
         if (movieResponses.isEmpty())
             return ResponseEntity.noContent().build();
         return ResponseEntity.ok(movieResponses);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<MovieResponse> findById(@PathVariable Long id) {
+        return service.findById(id)
+                .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 }
