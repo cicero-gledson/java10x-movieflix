@@ -5,10 +5,12 @@ import com.movieflix.entity.Category;
 import com.movieflix.entity.Movie;
 import com.movieflix.entity.Streaming;
 import com.movieflix.repository.MovieRepository;
+import com.movieflix.service.exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,5 +46,39 @@ public class MovieService {
     }
     public List<Movie> findAll() {
         return repository.findAll();
+    }
+
+    public Optional<Movie> update(Long id, Movie updateMovie) {
+        Optional<Movie> optMovie = repository.findById(id);
+        if (optMovie.isPresent()) {
+            Movie movie = optMovie.get();
+            movie.setTitle(updateMovie.getTitle());
+            movie.setDescription(updateMovie.getDescription());
+            movie.setRating(updateMovie.getRating());
+            movie.setReleaseDate(updateMovie.getReleaseDate());
+
+            movie.getCategories().clear();
+            movie.getCategories().addAll(findCategories(updateMovie.getCategories()));
+
+            movie.getStreamings().clear();
+            movie.getStreamings().addAll(findStreamings(updateMovie.getStreamings()));
+
+            repository.save(movie);
+            return Optional.of(movie);
+        }
+        return Optional.empty();
+    }
+
+    public List<Movie> findByCategory(Long category) {
+        return repository.findByCategories_Id(category);
+    }
+
+    public void delete(Long id) {
+        if (! repository.existsById(id))
+            throw new ResourceNotFoundException("Id não encontrado: " + id);
+
+        repository.deleteById(id);
+
+
     }
 }

@@ -15,7 +15,8 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import java.net.URI;
 import java.util.List;
 
-@Controller
+
+@RestController
 @RequestMapping("/movieflix/movie")
 @RequiredArgsConstructor
 public class MovieController {
@@ -46,4 +47,31 @@ public class MovieController {
                 .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<MovieResponse> update(@PathVariable Long id, @RequestBody MovieRequest movieRequest) {
+        return service.update(id, MovieMapper.toMovie(movieRequest))
+                .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<MovieResponse>> search(@RequestParam Long category) {
+        List<MovieResponse> movieResponses = service.findByCategory(category)
+                .stream()
+                .map(MovieMapper::toMovieResponse)
+                .toList();
+        if (movieResponses.isEmpty())
+            return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(movieResponses);
+
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

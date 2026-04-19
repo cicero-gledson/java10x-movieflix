@@ -14,7 +14,7 @@ public record MovieResponse(
         Long id,
         String title,
         String description,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd/MM/yyyy")
         LocalDate releaseDate,
         Double rating,
         LocalDateTime createdAt,
