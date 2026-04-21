@@ -5,6 +5,7 @@ import com.movieflix.controller.response.StreamingResponse;
 import com.movieflix.entity.Streaming;
 import com.movieflix.mapper.StreamingMapper;
 import com.movieflix.service.StreamingService;
+import jakarta.validation.Valid;
 import jakarta.websocket.server.PathParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -45,7 +46,7 @@ public class StreamingController {
 
 
     @PostMapping
-    public ResponseEntity<StreamingResponse> save(@RequestBody StreamingRequest streamingRequest) {
+    public ResponseEntity<StreamingResponse> save(@Valid @RequestBody StreamingRequest streamingRequest) {
         Streaming streamingSalvo = service.save (StreamingMapper.toStreaming (streamingRequest));
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(streamingSalvo.getId()).toUri();
         return ResponseEntity.created(uri).body(StreamingMapper.toStreamingResponse(streamingSalvo));

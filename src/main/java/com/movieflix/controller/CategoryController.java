@@ -6,6 +6,7 @@ import com.movieflix.entity.Category;
 import com.movieflix.mapper.CategoryMapper;
 import com.movieflix.service.CategoryService;
 import jakarta.servlet.ServletRequest;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -45,7 +46,7 @@ public class CategoryController {
 
 
     @PostMapping
-    public ResponseEntity<CategoryResponse> saveCategory(@RequestBody CategoryRequest categoryRequest) {
+    public ResponseEntity<CategoryResponse> saveCategory(@Valid @RequestBody CategoryRequest categoryRequest) {
         Category categorySalvo = categoryService.saveCategory(CategoryMapper.toCategory(categoryRequest));
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(categorySalvo.getId()).toUri();
         return ResponseEntity.created(uri).body(CategoryMapper.toCategoryResponse(categorySalvo));

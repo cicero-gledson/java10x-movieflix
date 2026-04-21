@@ -1,10 +1,20 @@
 package com.movieflix.controller;
 
+import com.movieflix.controller.docInterface.MovieControllerDoc;
 import com.movieflix.controller.request.MovieRequest;
 import com.movieflix.controller.response.MovieResponse;
 import com.movieflix.entity.Movie;
 import com.movieflix.mapper.MovieMapper;
 import com.movieflix.service.MovieService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,11 +29,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/movieflix/movie")
 @RequiredArgsConstructor
-public class MovieController {
+public class MovieController implements MovieControllerDoc {
     private final MovieService service;
 
     @PostMapping
-    public ResponseEntity<MovieResponse> save(@RequestBody MovieRequest movieRequest) {
+    public ResponseEntity<MovieResponse> save(@Valid @RequestBody MovieRequest movieRequest) {
         Movie movie = MovieMapper.toMovie(movieRequest);
         movie = service.save(movie);
         URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}").buildAndExpand(movie.getId()).toUri();
@@ -41,6 +51,7 @@ public class MovieController {
         return ResponseEntity.ok(movieResponses);
     }
 
+
     @GetMapping("/{id}")
     public ResponseEntity<MovieResponse> findById(@PathVariable Long id) {
         return service.findById(id)
@@ -49,7 +60,7 @@ public class MovieController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<MovieResponse> update(@PathVariable Long id, @RequestBody MovieRequest movieRequest) {
+    public ResponseEntity<MovieResponse> update(@PathVariable Long id, @Valid @RequestBody MovieRequest movieRequest) {
         return service.update(id, MovieMapper.toMovie(movieRequest))
                 .map(movie -> ResponseEntity.ok(MovieMapper.toMovieResponse(movie)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -72,6 +83,5 @@ public class MovieController {
         service.delete(id);
         return ResponseEntity.noContent().build();
     }
-
 
 }
